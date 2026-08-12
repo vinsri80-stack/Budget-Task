@@ -8,11 +8,27 @@ import { formatINR } from '../calc.js';
 import { cycleMonthLabel } from '../cycle.js';
 import { cloud, reset, exportJSON, importJSON } from '../storage.js';
 import { downloadBackup } from '../export.js';
+import { hasPin, setPin, clearPin, tryUnlock } from '../lock.js';
 
 export function renderSettings(app) {
   const { state, cycle } = app;
 
   return [
+    card('App lock',
+      hasPin()
+        ? h('div', {},
+            h('p', { class: 'prose' }, 'A PIN is required to open this app on this device.'),
+            h('div', { class: 'card-actions' },
+              h('button', { class: 'btn btn-ghost', onClick: () => changePinFlow(app) }, 'Change PIN'),
+              h('button', { class: 'btn btn-danger', onClick: () => removePinFlow(app) }, 'Remove PIN')))
+        : h('div', {},
+            h('p', { class: 'prose' },
+              'Set a PIN so the app asks for it every time it’s opened on this device. '
+              + 'This only blocks casual access — it is not encryption, and someone with direct '
+              + 'access to this browser’s storage/devtools could bypass it.'),
+            h('div', { class: 'card-actions' },
+              h('button', { class: 'btn btn-primary', onClick: () => setPinFlow(app) }, 'Set a PIN')))),
+
     card('Opening balance',
       h('div', { class: 'form-grid' },
         field('Anchor cycle', input('anchorCycle', {
@@ -115,6 +131,66 @@ function commitmentEditor(app, c) {
       ? h('p', { class: 'muted small' },
           `Total remaining: ${formatINR((c.amount ?? 0) * c.remainingMonths)} over ${c.remainingMonths} months.`)
       : null);
+}
+
+/* ---------------- app lock actions ---------------- */
+
+function setPinFlow(app) {
+  modal('Set a PIN',
+    h('div', {},
+      field('New PIN (4–8 digits)', input('pin', { type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'off', required: true })),
+      field('Confirm PIN', input('pin2', { type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'off', required: true }))),
+    {
+      submitLabel: 'Set PIN',
+      onSubmit: async (fd, close) => {
+        const pin = fd.get('pin') || '';
+        if (!/^\d{4,8}$/.test(pin)) return toast('PIN must be 4–8 digits');
+        if (pin !== fd.get('pin2')) return toast('PINs don’t match');
+        await setPin(pin);
+        close();
+        toast('PIN set');
+        app.refresh();
+      },
+    });
+}
+
+function changePinFlow(app) {
+  modal('Change PIN',
+    h('div', {},
+      field('Current PIN', input('current', { type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'off', required: true })),
+      field('New PIN (4–8 digits)', input('pin', { type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'off', required: true })),
+      field('Confirm new PIN', input('pin2', { type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'off', required: true }))),
+    {
+      submitLabel: 'Change PIN',
+      onSubmit: async (fd, close) => {
+        const ok = await tryUnlock(fd.get('current') || '');
+        if (!ok) return toast('Current PIN is wrong');
+        const pin = fd.get('pin') || '';
+        if (!/^\d{4,8}$/.test(pin)) return toast('PIN must be 4–8 digits');
+        if (pin !== fd.get('pin2')) return toast('PINs don’t match');
+        await setPin(pin);
+        close();
+        toast('PIN changed');
+        app.refresh();
+      },
+    });
+}
+
+function removePinFlow(app) {
+  modal('Remove PIN',
+    h('div', {},
+      field('Current PIN', input('current', { type: 'password', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'off', required: true }))),
+    {
+      submitLabel: 'Remove PIN',
+      onSubmit: async (fd, close) => {
+        const ok = await tryUnlock(fd.get('current') || '');
+        if (!ok) return toast('Current PIN is wrong');
+        clearPin();
+        close();
+        toast('PIN removed');
+        app.refresh();
+      },
+    });
 }
 
 /* ---------------- backup actions ---------------- */

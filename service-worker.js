@@ -1,5 +1,5 @@
 /* Offline shell cache. Bump CACHE_NAME after changing any asset. */
-const CACHE_NAME = 'budget-v1';
+const CACHE_NAME = 'budget-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -11,11 +11,15 @@ const ASSETS = [
   './js/calc.js',
   './js/storage.js',
   './js/export.js',
+  './js/tasks.js',
+  './js/lock.js',
   './js/ui/dom.js',
   './js/ui/dashboard.js',
   './js/ui/inflow.js',
   './js/ui/expenses.js',
   './js/ui/outflow.js',
+  './js/ui/tasks.js',
+  './js/ui/lockscreen.js',
   './js/ui/settings.js',
 ];
 

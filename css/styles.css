@@ -546,6 +546,37 @@ body {
   .header-actions .btn { padding: 6px 10px; }
 }
 
+/* ---------------- lock screen ---------------- */
+
+.lock-screen {
+  position: fixed; inset: 0; z-index: 100;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.lock-card { width: 100%; max-width: 320px; text-align: center; }
+.lock-icon { font-size: 40px; margin-bottom: 4px; }
+.lock-card h1 { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
+.lock-msg { font-size: 13.5px; color: var(--text-secondary); margin: 0 0 18px; }
+.lock-msg.lock-error { color: var(--bad); font-weight: 600; }
+
+.lock-dots { display: flex; justify-content: center; gap: 12px; margin-bottom: 28px; }
+.lock-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1px solid var(--border-strong); background: transparent;
+}
+.lock-dot.filled { background: var(--peach-strong); border-color: var(--peach-strong); }
+
+.lock-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.lock-key {
+  font: inherit; font-size: 20px; padding: 18px 0; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--card); color: var(--text);
+  cursor: pointer;
+}
+.lock-key:active { background: var(--peach); }
+.lock-key-primary { background: var(--peach-strong); border-color: var(--peach-strong); color: #fff; }
+.lock-key-ghost { color: var(--text-muted); font-size: 17px; }
+
 @media print {
   .app-header, .app-footer, .card-actions, .icon-btn { display: none !important; }
   body { background: #fff; }

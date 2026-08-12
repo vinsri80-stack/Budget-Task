@@ -4,6 +4,8 @@
 
 import { h, mount, toast, modal, field, select } from './ui/dom.js';
 import { load, save, cloud } from './storage.js';
+import { isUnlocked, hasPin, lockNow } from './lock.js';
+import { renderLockScreen } from './ui/lockscreen.js';
 import {
   currentCycle, cycleMonthLabel, cycleRangeLabel,
   nextCycle, prevCycle, cycleProgress, cycleRange, shiftCycle,
@@ -81,6 +83,8 @@ function renderHeader() {
         h('p', { class: 'header-sub' }, `${cycleRangeLabel(app.cycle)} · 15th → 14th`)),
       h('div', { class: 'header-actions' },
         h('button', { class: 'btn btn-ghost btn-sm', onClick: openExport }, 'Export'),
+        hasPin() &&
+          h('button', { class: 'btn btn-ghost btn-sm', onClick: () => { lockNow(); render(); } }, '🔒 Lock'),
         !prog.isCurrent &&
           h('button', { class: 'btn btn-ghost btn-sm', onClick: () => app.setCycle(currentCycle()) }, 'Today'))),
 
@@ -103,6 +107,10 @@ function renderHeader() {
 }
 
 function render() {
+  if (!isUnlocked()) {
+    mount(document.getElementById('root'), renderLockScreen(render));
+    return;
+  }
   const tab = TABS.find((t) => t.id === app.tab) ?? TABS[0];
   mount(document.getElementById('root'),
     renderHeader(),
