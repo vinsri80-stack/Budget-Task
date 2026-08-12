@@ -505,6 +505,26 @@ body {
 
   #root { padding-bottom: 92px; }
 
+  /* Secondary/caption text reads as too small on an actual phone screen —
+     bump it up a notch here rather than globally, so desktop density stays put. */
+  body { font-size: 16px; }
+  .row-label, .row-amount { font-size: 15px; }
+  .row-detail { font-size: 13px; }
+  .stat-label { font-size: 12.5px; }
+  .stat-caption { font-size: 12px; }
+  .card-title { font-size: 12.5px; }
+  .empty, .prose { font-size: 14px; }
+  .muted, .small { font-size: 13px; }
+  .badge { font-size: 11.5px; }
+  .chip { font-size: 13px; }
+  .field-label { font-size: 13px; }
+  .field-hint { font-size: 12px; }
+  .task-card .t-title { font-size: 15px; }
+  .task-card .t-meta { font-size: 13px; }
+  .task-card .t-desc { font-size: 13.5px; }
+  .task-card .t-actions button { font-size: 13px; }
+  .reminder-banner ul { font-size: 14px; }
+
   .tabs {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
     background: var(--card); border-top: 1px solid var(--border); border-bottom: none;
