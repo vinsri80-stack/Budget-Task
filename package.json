@@ -1,0 +1,12 @@
+{
+  "name": "budget-app",
+  "version": "1.0.0",
+  "description": "Monthly budget on a 15th-to-14th cycle — inflows, expenses, EMIs and consolidated credit card dues.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes serve -l 5173 .",
+    "test": "node --test tests/",
+    "build": "node build.js"
+  }
+}
